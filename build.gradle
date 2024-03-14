@@ -24,28 +24,31 @@ allprojects {
   }
 
   dependencies {
-    compile 'net.sourceforge.argparse4j:argparse4j:0.5.0'
-    compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.17.1'
-    compile 'org.apache.avro:avro:1.9.2'
-    compile 'org.json:json:20140107'
-    compile 'org.jolokia:jolokia-jvm:1.6.2'
-    compile 'net.savantly:graphite-client:1.1.0-RELEASE'
-    compile 'com.timgroup:java-statsd-client:3.0.2'
-    compile 'com.signalfx.public:signalfx-codahale:0.0.47'
-    compile group: 'org.apache.kafka', name: 'kafka_2.12', version: '2.8.2'
-    compile group: 'org.apache.kafka', name: 'kafka-clients', version: '2.8.2'
-    compile 'org.apache.commons:commons-lang3:3.12.0'
-    compile 'com.linkedin.avroutil1:helper-all:0.2.118'
-    compile 'org.apache.zookeeper:zookeeper:3.8.0'
-    testCompile 'org.mockito:mockito-core:2.24.0'
-    testCompile 'org.testng:testng:6.8.8'
+    implementation 'net.sourceforge.argparse4j:argparse4j:0.5.0'
+    implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.17.1'
+    implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
+    implementation 'org.apache.avro:avro:1.9.2'
+    implementation 'org.json:json:20140107'
+    implementation 'org.jolokia:jolokia-jvm:1.6.2'
+    implementation 'net.savantly:graphite-client:1.1.0-RELEASE'
+    implementation 'com.timgroup:java-statsd-client:3.0.2'
+    implementation 'com.signalfx.public:signalfx-codahale:0.0.47'
+    implementation group: 'org.apache.kafka', name: 'kafka_2.12', version: '2.8.2'
+    implementation group: 'org.apache.kafka', name: 'kafka-clients', version: '2.8.2'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'com.linkedin.avroutil1:helper-all:0.2.118'
+    implementation 'org.apache.zookeeper:zookeeper:3.8.0'
+    testImplementation 'org.mockito:mockito-core:2.24.0'
+    testImplementation 'org.testng:testng:6.8.8'
   }
 
   tasks.create(name: "copyDependantLibs", type: Copy) {
-    from(configurations.testRuntime) {
+    from (configurations.testRuntimeClasspath) {
       include('slf4j-log4j12*')
     }
-    from(configurations.runtime) {}
+
+    from (configurations.compileClasspath) {}
+
     into "build/dependant-libs"
     duplicatesStrategy 'exclude'
   }
@@ -69,17 +72,17 @@ allprojects {
 
   task sourceJar(type: Jar) {
     from sourceSets.main.allJava
-    classifier "sources"
+    archiveClassifier.set('sources')
   }
 
   task javadocJar(type: Jar) {
     from javadoc
-    classifier = 'javadoc'
+    archiveClassifier.set('javadoc')
   }
 
   task testJar(type: Jar) {
     from sourceSets.test.allJava
-    classifier = 'tests'
+    archiveClassifier.set('tests')
   }
 
   publishing {
@@ -195,13 +198,13 @@ allprojects {
   }
   tasks.withType(Tar){
     compression = Compression.GZIP
-    extension = 'tar.gz'
+    archiveExtension.set('tar.gz')
   }
 
 }
 
 wrapper {
-  gradleVersion = '5.2.1'
+  gradleVersion = '8.6'
   distributionType = Wrapper.DistributionType.ALL
 
 }
